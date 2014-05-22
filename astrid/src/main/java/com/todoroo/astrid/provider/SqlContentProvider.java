@@ -11,9 +11,9 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 
+import com.todoroo.andlib.data.AbstractDatabase;
 import com.todoroo.andlib.service.Autowired;
 import com.todoroo.andlib.service.DependencyInjectionService;
-import com.todoroo.andlib.service.ExceptionService;
 import com.todoroo.astrid.api.AstridApiConstants;
 import com.todoroo.astrid.dao.Database;
 import com.todoroo.astrid.service.AstridDependencyInjector;
@@ -46,24 +46,12 @@ public class SqlContentProvider extends ContentProvider {
     @Autowired
     private Database database;
 
-    @Autowired
-    private ExceptionService exceptionService;
-
     @Override
     public boolean onCreate() {
-        try {
-            database.openForWriting();
-            return database.getDatabase() != null;
-        } catch (Exception e) {
-            exceptionService.reportError("astrid-provider", e);
-            return false;
-        }
+        return true;
     }
 
-
     public SqlContentProvider() {
-        DependencyInjectionService.getInstance().inject(this);
-
         setReadPermission(AstridApiConstants.PERMISSION_READ);
         setWritePermission(AstridApiConstants.PERMISSION_WRITE);
     }
@@ -128,7 +116,15 @@ public class SqlContentProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection,
             String[] selectionArgs, String sortOrder) {
 
-        return database.rawQuery(selection);
+        return getDatabase().rawQuery(selection);
     }
 
+    private AbstractDatabase getDatabase() {
+        if (database == null) {
+            DependencyInjectionService.getInstance().inject(this);
+            database.openForWriting();
+        }
+
+        return database;
+    }
 }

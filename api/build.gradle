@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.9.+'
+        classpath 'com.android.tools.build:gradle:0.10.+'
     }
 }
 
@@ -27,12 +27,14 @@ android {
 
     defaultConfig {
         minSdkVersion 7
-        targetSdkVersion 18
+        targetSdkVersion 19
     }
 }
 
 dependencies {
-    compile group: 'com.android.support', name: 'support-v4', version: '19.0.+'
+    compile group: 'com.android.support', name: 'support-v4', version: '19.1.+'
 
+    compile group: 'org.slf4j', name: 'slf4j-android', version: '1.7.7', transitive: false
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.7'
     compile group: 'joda-time', name: 'joda-time', version: '2.3', transitive: false
 }

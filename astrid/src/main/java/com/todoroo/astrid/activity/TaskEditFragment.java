@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
@@ -43,7 +44,6 @@ import android.widget.Toast;
 
 import com.todoroo.andlib.service.Autowired;
 import com.todoroo.andlib.service.DependencyInjectionService;
-import com.todoroo.andlib.service.ExceptionService;
 import com.todoroo.andlib.utility.AndroidUtilities;
 import com.todoroo.andlib.utility.DateUtilities;
 import com.todoroo.andlib.utility.DialogUtilities;
@@ -82,6 +82,8 @@ import com.todoroo.astrid.utility.Flags;
 import com.todoroo.astrid.voice.VoiceInputAssistant;
 import com.todoroo.astrid.voice.VoiceRecognizer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tasks.R;
 
 import java.io.File;
@@ -104,6 +106,8 @@ import static android.support.v4.view.MenuItemCompat.setShowAsAction;
  */
 public final class TaskEditFragment extends Fragment implements
 ViewPager.OnPageChangeListener, EditNoteActivity.UpdatesChangedListener {
+
+    private static final Logger log = LoggerFactory.getLogger(TaskEditFragment.class);
 
     public static final String TAG_TASKEDIT_FRAGMENT = "taskedit_fragment"; //$NON-NLS-1$
 
@@ -162,9 +166,6 @@ ViewPager.OnPageChangeListener, EditNoteActivity.UpdatesChangedListener {
     // --- services
 
     public static final int TAB_VIEW_UPDATES = 0;
-
-    @Autowired
-    private ExceptionService exceptionService;
 
     @Autowired
     private TaskService taskService;
@@ -611,8 +612,7 @@ ViewPager.OnPageChangeListener, EditNoteActivity.UpdatesChangedListener {
         setIsNewTask(model.getTitle().length() == 0);
 
         if (model == null) {
-            exceptionService.reportError("task-edit-no-task",
-                    new NullPointerException("model"));
+            log.error("task-edit-no-task", new NullPointerException("model"));
             getActivity().onBackPressed();
             return;
         }
@@ -852,7 +852,6 @@ ViewPager.OnPageChangeListener, EditNoteActivity.UpdatesChangedListener {
 
     private void startRecordingAudio() {
         Intent recordAudio = new Intent(getActivity(), AACRecordingActivity.class);
-        recordAudio.putExtra(AACRecordingActivity.EXTRA_TEMP_FILE, getActivity().getFilesDir() + File.separator + "audio.aac"); //$NON-NLS-1$
         startActivityForResult(recordAudio, REQUEST_CODE_RECORD);
     }
 
@@ -952,9 +951,13 @@ ViewPager.OnPageChangeListener, EditNoteActivity.UpdatesChangedListener {
 
         setShowAsAction(item, MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        item = menu.add(Menu.NONE, MENU_RECORD_ID, 0, R.string.premium_record_audio);
-        item.setIcon(ThemeService.getDrawable(R.drawable.ic_action_mic));
-        setShowAsAction(item, MenuItem.SHOW_AS_ACTION_ALWAYS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
+            // media recorder aac support requires api level 10
+            // approximately 1% of current installs are using api level 7-9
+            item = menu.add(Menu.NONE, MENU_RECORD_ID, 0, R.string.premium_record_audio);
+            item.setIcon(ThemeService.getDrawable(R.drawable.ic_action_mic));
+            setShowAsAction(item, MenuItem.SHOW_AS_ACTION_ALWAYS);
+        }
 
         item = menu.add(Menu.NONE, MENU_DELETE_TASK_ID, 0, R.string.delete_task);
         item.setIcon(ThemeService.getDrawable(R.drawable.ic_action_discard));

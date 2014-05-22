@@ -1,24 +1,16 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots/'
-        }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.9.+'
-        classpath 'com.squareup.gradle:gradle-android-test-plugin:0.9.1-SNAPSHOT'
+        classpath 'com.android.tools.build:gradle:0.10.+'
     }
 }
 
 apply plugin: 'android'
-apply plugin: 'android-test'
 
 repositories {
     mavenCentral()
-    maven {
-        url 'https://oss.sonatype.org/content/repositories/snapshots/'
-    }
 }
 
 android {
@@ -31,7 +23,7 @@ android {
 
     defaultConfig {
         minSdkVersion 7
-        targetSdkVersion 18
+        targetSdkVersion 19
     }
 
     signingConfigs {
@@ -77,12 +69,11 @@ android.applicationVariants.all { variant ->
 }
 
 dependencies {
-    compile group: 'com.android.support', name: 'support-v4', version: '19.0.+'
-    compile group: 'com.android.support', name: 'appcompat-v7', version: '19.0.+'
+    compile group: 'com.android.support', name: 'support-v4', version: '19.1.+'
+    compile group: 'com.android.support', name: 'appcompat-v7', version: '19.1.+'
 
     compile 'net.simonvt.menudrawer:menudrawer:3.0.4@aar'
 
-    compile project(":android-aac-enc")
     compile project(":api")
 
     compile fileTree(dir: "libs", includes: ["*.jar"])
@@ -98,12 +89,4 @@ dependencies {
     compile group: 'com.google.http-client', name: 'google-http-client-extensions-android3', version: '1.6.0-beta', transitive: false
     compile group: 'com.google.oauth-client', name: 'google-oauth-client', version: '1.6.0-beta', transitive: false
     compile group: 'com.google.oauth-client', name: 'google-oauth-client-extensions', version: '1.6.0-beta', transitive: false
-
-    testCompile group: 'junit', name: 'junit', version: '4.10'
-    testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3-SNAPSHOT'
-    testCompile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
-    // hack to get android studio to import libraries
-    androidTestCompile group: 'junit', name: 'junit', version: '4.10', transitive: false
-    androidTestCompile group: 'org.robolectric', name: 'robolectric', version: '2.3-SNAPSHOT', transitive: false
-    androidTestCompile group: 'org.mockito', name: 'mockito-core', version: '1.9.5', transitive: false
 }

@@ -7,8 +7,6 @@ package com.todoroo.astrid.service;
 
 import com.todoroo.andlib.service.AbstractDependencyInjector;
 import com.todoroo.andlib.service.DependencyInjectionService;
-import com.todoroo.andlib.service.ExceptionService.AndroidLogReporter;
-import com.todoroo.andlib.service.ExceptionService.ErrorReporter;
 import com.todoroo.astrid.dao.Database;
 import com.todoroo.astrid.dao.MetadataDao;
 import com.todoroo.astrid.dao.StoreObjectDao;
@@ -24,7 +22,6 @@ import com.todoroo.astrid.gtasks.GtasksPreferenceService;
 import com.todoroo.astrid.gtasks.GtasksTaskListUpdater;
 import com.todoroo.astrid.gtasks.sync.GtasksSyncService;
 import com.todoroo.astrid.tags.TagService;
-import com.todoroo.astrid.utility.Constants;
 
 import org.tasks.Broadcaster;
 import org.tasks.filters.FilterCounter;
@@ -49,12 +46,9 @@ public class AstridDependencyInjector extends AbstractDependencyInjector {
     /**
      * Initialize list of injectables. Special care must used when
      * instantiating classes that themselves depend on dependency injection
-     * (i.e. {@link ErrorReporter}.
      */
     @Override
     protected void addInjectables() {
-        injectables.put("debug", Constants.DEBUG);
-
         // com.todoroo.android.service
         injectables.put("applicationName", "astrid");
 
@@ -90,11 +84,6 @@ public class AstridDependencyInjector extends AbstractDependencyInjector {
 
         injectables.put("filterCounter", FilterCounter.class);
         injectables.put("refreshScheduler", RefreshScheduler.class);
-
-        // these make reference to fields defined above
-        injectables.put("errorReporters", new ErrorReporter[] {
-                new AndroidLogReporter(),
-        });
     }
 
     /**
